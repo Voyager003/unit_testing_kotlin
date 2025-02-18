@@ -1,17 +1,23 @@
 package ex.unit_testing_kotlin
 
-import java.util.ArrayList
 
-fun verifyPassword(input: String, rules: List<(String) -> RuleResult>): List<String> {
-    val errors = ArrayList<String>()
+class PasswordVerifier {
+    private val rules = mutableListOf<(String) -> VerificationResult>()
 
-    rules.forEach { rule ->
-        val result = rule(input)
-        if (!result.passed) {
-            errors.add("error ${result.reason}")
-        }
+    fun addRule(rule: (String) -> VerificationResult) {
+        rules.add(rule)
     }
-    return errors
+
+    fun verify(input: String): List<String> {
+        val errors = mutableListOf<String>()
+        for (rule in rules) {
+            val result = rule(input)
+            if (!result.passed) {
+                errors.add(result.reason)
+            }
+        }
+        return errors
+    }
 }
 
-data class RuleResult(val passed: Boolean, val reason: String)
+data class VerificationResult(val passed: Boolean, val reason: String)
