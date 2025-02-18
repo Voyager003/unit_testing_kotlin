@@ -1,6 +1,7 @@
 package ex.unit_testing_kotlin
 
-import org.junit.jupiter.api.Assertions.*
+import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.string.shouldContain
 
 class PasswordVerifierDescribeTest : DescribeSpec({
     describe("Password Verification") {
