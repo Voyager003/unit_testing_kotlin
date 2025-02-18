@@ -5,8 +5,16 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.string.shouldContain
 
 class PasswordVerifierTest : DescribeSpec({
-    describe("PasswordVerifier") {
+    // 팩토리 함수
+    fun makeFailingRule(reason: String): (String) -> VerificationResult = { _ ->
+        VerificationResult(passed = false, reason = reason)
+    }
 
+    fun makePassingRule(): (String) -> VerificationResult = { _ ->
+        VerificationResult(passed = true, reason = "")
+    }
+
+    describe("PasswordVerifier") {
         lateinit var verifier: PasswordVerifier
 
         beforeEach {
@@ -14,12 +22,10 @@ class PasswordVerifierTest : DescribeSpec({
         }
 
         describe("with a failing rule") {
-            var fakeRule: (String) -> VerificationResult
             lateinit var errors: List<String>
 
             beforeEach {
-                fakeRule = { _ -> VerificationResult(passed = false, reason = "fake reason") }
-                verifier.addRule(fakeRule)
+                verifier.addRule(makeFailingRule("fake reason"))
             }
 
             it("has an error message based on the rule.reason") {
@@ -35,8 +41,7 @@ class PasswordVerifierTest : DescribeSpec({
 
         describe("with a passing rule") {
             beforeEach {
-                val passingRule = { _: String -> VerificationResult(passed = true, reason = "") }
-                verifier.addRule(passingRule)
+                verifier.addRule(makePassingRule())
             }
 
             it("should have no errors") {
@@ -47,13 +52,9 @@ class PasswordVerifierTest : DescribeSpec({
 
         describe("with multiple rules") {
             beforeEach {
-                val passingRule = { _: String -> VerificationResult(passed = true, reason = "") }
-                val failingRule1 = { _: String -> VerificationResult(passed = false, reason = "error 1") }
-                val failingRule2 = { _: String -> VerificationResult(passed = false, reason = "error 2") }
-
-                verifier.addRule(passingRule)
-                verifier.addRule(failingRule1)
-                verifier.addRule(failingRule2)
+                verifier.addRule(makePassingRule())
+                verifier.addRule(makeFailingRule("error 1"))
+                verifier.addRule(makeFailingRule("error 2"))
             }
 
             it("should collect all error messages") {
