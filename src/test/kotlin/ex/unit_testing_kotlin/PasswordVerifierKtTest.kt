@@ -5,7 +5,7 @@ import io.kotest.matchers.string.shouldContain
 
 class PasswordVerifierDescribeTest : DescribeSpec({
     describe("Password Verification") {
-        context("with a rule that always fails") {
+        context("given a failing rule") {
             val fakeRule = { input: String ->
                 RuleResult(passed = false, reason = "fake reason")
             }
